@@ -10,23 +10,30 @@ import 'package:h_k_app/utils/bindings.dart';
 import 'package:h_k_app/utils/const.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
+
 import 'utils/enum.dart';
 
 Future<void> main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  // await SystemTheme.accentColor.load();
-  // await Get.putAsync<SharedPreferences>(() async => await SharedPreferences.getInstance());
-  // Get.put(DatabaseRepository(Get.find<SharedPreferences>()));
-  // Get.put(PreferencesController(Get.find<DatabaseRepository>()));
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // // Load all the licenses for the fonts
-  // LicenseRegistry.addLicense(() async* {
-  //   for (final font in Fonts.values) {
-  //     final license = await font.license();
-  //     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
-  //   }
-  // });
+  if (!kIsWeb) {
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+    await SystemTheme.accentColor.load();
+  }
+
+  final prefs = await SharedPreferences.getInstance();
+
+  Get.put<SharedPreferences>(prefs);
+  Get.put(DatabaseRepository(Get.find<SharedPreferences>()));
+  Get.put(PreferencesController(Get.find<DatabaseRepository>()));
+
+  LicenseRegistry.addLicense(() async* {
+    for (final font in Fonts.values) {
+      final license = await font.license();
+      yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+    }
+  });
 
   runApp(const NeumorphicCalculatorApp());
 }
